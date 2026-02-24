@@ -1,0 +1,86 @@
+:root{
+  --bg-deep:#4b106a;
+  --bg-mid:#7b2bb5;
+  --accent:#ffd6ea;
+  --glass:rgba(255,255,255,0.08);
+  --glass-strong:rgba(255,255,255,0.12);
+  --muted:rgba(255,255,255,0.8);
+  --card-radius:14px;
+}
+
+/* Base layout */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Poppins',Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,Helvetica;color:#fff;background:linear-gradient(180deg,var(--bg-mid),var(--bg-deep));-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* pixel-art background sits behind content */
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;opacity:.18;pointer-events:none}
+#bg svg{width:100%;height:100%;display:block;shape-rendering:crispEdges}
+
+.wrap{max-width:920px;margin:0 auto;padding:2.25rem;text-align:center;position:relative}
+
+/* Card look */
+.wrap{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06));border:1px solid rgba(255,255,255,0.04);border-radius:var(--card-radius);backdrop-filter:blur(6px);box-shadow:0 8px 30px rgba(0,0,0,0.35)}
+
+h1{font-family:'Patrick Hand',cursive;font-size:3.2rem;margin:0 0 .25rem;line-height:1;letter-spacing:0;color:whitesmoke;text-shadow:0 6px 30px rgba(107,33,168,0.18);transform:rotate(-1deg)}
+p.lead{opacity:0.98;color:var(--muted);margin:0 0 1rem;font-size:1.06rem}
+
+.keywords{display:inline-flex;gap:.6rem;flex-wrap:wrap;justify-content:center}
+.keyword{appearance:none;border:0;padding:.55rem .9rem;border-radius:999px;color:var(--bg-deep);cursor:pointer;font-weight:700;background:linear-gradient(180deg,#fff,#ffe6f5);box-shadow:0 6px 16px rgba(107,33,168,0.12);transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease}
+.keyword:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(107,33,168,0.18)}
+.keyword:active{transform:translateY(-1px)}
+.keyword[aria-expanded="true"]{outline:2px solid rgba(255,214,234,0.32)}
+
+.hint{font-size:.92rem;opacity:.95;margin-top:1rem;color:rgba(255,255,255,0.9)}
+
+/* Date prompt styles */
+.date-prompt{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-bottom:1rem}
+.date-prompt input{width:320px;max-width:86%;padding:.6rem .75rem;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.95);color:var(--bg-deep);font-weight:600}
+.date-prompt .date-btn{appearance:none;border:0;padding:.5rem .9rem;border-radius:10px;background:linear-gradient(180deg,var(--accent),#ffd6ea);color:var(--bg-deep);font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(107,33,168,0.08);transition:transform .16s ease}
+.date-prompt .date-btn:hover{transform:translateY(-3px)}
+.date-hint{font-size:.88rem;color:rgba(255,255,255,0.85)}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+.popup{max-width:620px;margin:1rem auto 0;overflow:hidden;max-height:0;opacity:0;transition:max-height .36s cubic-bezier(.2,.9,.2,1),opacity .22s;padding:0 1rem;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(0,0,0,0.4)}
+.popup.open{max-height:260px;opacity:1;padding:1rem}
+.popup p{margin:0;color:rgba(255,255,255,0.98);font-size:1.03rem}
+
+footer{position:fixed;left:14px;bottom:14px;font-size:.85rem;opacity:.98;color:rgba(255,255,255,0.9)}
+
+/* small responsive tweaks */
+@media (max-width:720px){
+  .wrap{margin:5vh 1rem;padding:1.25rem}
+  h1{font-size:1.9rem}
+  .keyword{padding:.5rem .75rem}
+}
+
+@media (max-width:420px){
+  p.lead{font-size:.98rem}
+}
+
+/* subtle entrance animation */
+@keyframes floatIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.wrap{animation:floatIn .6s cubic-bezier(.2,.9,.2,1)}
+
+/* Error style for popup messages */
+.popup p.err{color:#ffdde0;background:rgba(255,80,80,0.06);padding:.6rem;border-radius:8px}
+
+/* monthsary tip removed */
+
+/* Message variant selector + copy */
+.message-body{padding:.4rem .2rem;color:rgba(255,255,255,0.98);text-align:left}
+.message-body.energetic{font-weight:700;line-height:1.35;color:#fff;text-shadow:0 2px 12px rgba(123,43,181,0.18)}
+
+/* Inline variant container (appears under input when submitted) */
+.inline-variant{max-width:820px;margin:1rem auto 0;padding:1rem;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04);box-shadow:0 8px 30px rgba(0,0,0,0.35)}
+.inline-variant h2{margin-top:0}
+
+/* heart next to heading */
+.heart{display:inline-block;margin-left:.5rem;color:#ff6b99;font-size:1.05em;transform-origin:center;animation:heartBeat 1.2s ease-in-out infinite}
+@keyframes heartBeat{0%{transform:scale(1)}25%{transform:scale(1.18) rotate(-6deg)}40%{transform:scale(0.98) rotate(2deg)}60%{transform:scale(1.06) rotate(-2deg)}100%{transform:scale(1)}}
+
+/* confetti pieces */
+.confetti-piece{position:fixed;top:18%;z-index:9999;pointer-events:none;border-radius:2px;opacity:0.95;animation:confettiFall 3.8s cubic-bezier(.2,.8,.3,1) forwards, confettiSpin 1.2s linear infinite}
+@keyframes confettiFall{0%{transform:translateY(-20vh) rotate(0deg);opacity:1}60%{opacity:1}100%{transform:translateY(120vh) rotate(720deg);opacity:0.95}}
+@keyframes confettiSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+

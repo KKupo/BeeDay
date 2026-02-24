@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Made for you only</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- monthsary tip moved into the date prompt area so it appears under the input -->
+
+    <!-- Pixelated flowerland SVG background (small viewBox scaled up -> pixelated look) -->
+    <div id="bg" aria-hidden="true">
+        <svg viewBox="0 0 32 18" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <!-- sky -->
+            <rect width="32" height="18" fill="#8fd3ff"/>
+            <!-- distant hills -->
+            <rect x="0" y="10" width="32" height="8" fill="#7bd389"/>
+            <rect x="0" y="12" width="32" height="6" fill="#67c46a"/>
+            <!-- ground layer (pixel rows) -->
+            <rect x="0" y="13" width="32" height="5" fill="#4ea44a"/>
+
+            <!-- simple pixel flowers (each flower built from small rects to keep pixel look) -->
+            <!-- Flower 1 -->
+            <rect x="6" y="11" width="1" height="2" fill="#2d7a2f"/>
+            <rect x="5" y="10" width="1" height="1" fill="#ff5fb6"/>
+            <rect x="6" y="10" width="1" height="1" fill="#ffd6ea"/>
+            <rect x="7" y="10" width="1" height="1" fill="#ff9fe6"/>
+
+            <!-- Flower 2 -->
+            <rect x="14" y="11" width="1" height="2" fill="#2d7a2f"/>
+            <rect x="13" y="10" width="1" height="1" fill="#fff28a"/>
+            <rect x="14" y="10" width="1" height="1" fill="#ffd36a"/>
+            <rect x="15" y="10" width="1" height="1" fill="#ffb86a"/>
+
+            <!-- Flower 3 cluster -->
+            <rect x="24" y="11" width="1" height="2" fill="#2d7a2f"/>
+            <rect x="23" y="10" width="1" height="1" fill="#8ae6ff"/>
+            <rect x="24" y="10" width="1" height="1" fill="#7fe9ff"/>
+            <rect x="25" y="10" width="1" height="1" fill="#5cd6ff"/>
+
+            <!-- tiny decorative pixels -->
+            <rect x="2" y="12" width="1" height="1" fill="#6fbf5f"/>
+            <rect x="29" y="12" width="1" height="1" fill="#6fbf5f"/>
+        </svg>
+    </div>
+
+    <main class="wrap">
+        <div class="date-prompt" aria-live="polite">
+            <label for="dateInput" class="visually-hidden">Type Happy Birthday to reveal the message</label>
+            <input id="dateInput" type="text" placeholder="Type Happy Birthday" aria-label="Type Happy Birthday" />
+            <button id="dateSubmit" class="date-btn">Submit</button>
+            <div class="date-hint">Type "Happy Birthday" and press Submit to reveal your message.</div>
+        </div>
+        <h1>Happy Birthday <span class="heart" aria-hidden="true">♥</span></h1>
+        <p class="lead">Happy birthday! Click any keyword below to reveal a short message just for you.</p>
+
+        <div class="keywords" role="list">
+            <button class="keyword" data-message="You brought light to my darkest day — your smile is my sunshine." aria-expanded="false">Sunshine</button>
+            <button class="keyword" data-message="You make ordinary moments feel magical. Happy Birthday, love!" aria-expanded="false">Magic</button>
+            <button class="keyword" data-message="Every day with you is my favorite day. Thank you for being you." aria-expanded="false">Always</button>
+        </div>
+
+        <div id="pop" class="popup" aria-live="polite"></div>
+
+        <div class="hint">Tip: Click a keyword to toggle its message.</div>
+    </main>
+
+    <footer>Made with ♥ — Pixel Flowerland</footer>
+
+    <script>
+        (function(){
+            const buttons = document.querySelectorAll('.keyword');
+            const popup = document.getElementById('pop');
+            const dateInput = document.getElementById('dateInput');
+            const dateSubmit = document.getElementById('dateSubmit');
+            const datePrompt = document.querySelector('.date-prompt');
+
+            function closePopup(){
+                popup.classList.remove('open');
+                popup.innerHTML = '';
+                buttons.forEach(b=>b.setAttribute('aria-expanded','false'));
+            }
+
+            function showMessage(html){
+                popup.innerHTML = html;
+                requestAnimationFrame(()=> popup.classList.add('open'));
+                buttons.forEach(b=>b.setAttribute('aria-expanded','false'));
+            }
+
+            function rephraseMessage(text){
+                // energetic paraphrase for the special message (single rephrased output)
+                return ("Happy Birthday!\n\nHey Bee!! Today is YOUR day — thank you for being so incredibly kind and full of light. It feels like we've known each other forever, and your silly, playful side (even when you tease Bear) makes me laugh and love you more. Your upbeat, brave spirit even in tough times is one of the things I admire most. You are my sunshine, my answered prayer, and I can't wait for the future we'll build together. Distance can't dim this — celebrate big today, enjoy every moment, and know I'm cheering for you! ♥")
+                    .replace(/\n/g,'<br>');
+            }
+
+            function showMessageVariants(originalHtml, originalText){
+                const rephrased = rephraseMessage(originalText);
+                // Build a small selector + copy area inside popup
+                const container = document.createElement('div');
+                container.innerHTML = `
+                    <div class="message-select">
+                        <select id="variantSelect" aria-label="Choose message variant">
+                            <option value="original">Original</option>
+                            <option value="rephrased">Rephrased</option>
+                        </select>
+                        <button id="copyMsg" class="copy-btn">Copy</button>
+                    </div>
+                    <div class="message-body" id="messageBody">${originalHtml}</div>
+                `;
+                popup.innerHTML = '';
+                popup.appendChild(container);
+                requestAnimationFrame(()=> popup.classList.add('open'));
+                buttons.forEach(b=>b.setAttribute('aria-expanded','false'));
+
+                const select = popup.querySelector('#variantSelect');
+                const body = popup.querySelector('#messageBody');
+                const copyBtn = popup.querySelector('#copyMsg');
+
+                function setVariant(v){
+                    if(v === 'original') body.innerHTML = originalHtml;
+                    else body.innerHTML = rephrased;
+                }
+                setVariant('original');
+                select.addEventListener('change', ()=> setVariant(select.value));
+                copyBtn.addEventListener('click', ()=>{
+                    const text = (select.value === 'original') ? originalText : rephrased.replace(/<br>/g,'\n');
+                    if(navigator.clipboard && navigator.clipboard.writeText){
+                        navigator.clipboard.writeText(text).then(()=>{
+                            copyBtn.textContent = 'Copied!';
+                            setTimeout(()=> copyBtn.textContent = 'Copy',1200);
+                        }).catch(()=>{ copyBtn.textContent = 'Copy'; });
+                    } else {
+                        // fallback: select the body text
+                        const range = document.createRange();
+                        range.selectNodeContents(body);
+                        const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+                        try{ document.execCommand('copy'); copyBtn.textContent = 'Copied!'; setTimeout(()=> copyBtn.textContent = 'Copy',1200); }catch(e){}
+                        sel.removeAllRanges();
+                    }
+                });
+            }
+
+            // small confetti launcher
+            function launchConfetti(){
+                const colors = ['#ffd6ea','#fff28a','#8ae6ff','#ffb86a','#7fe9ff','#ffd36a'];
+                const count = 28;
+                for(let i=0;i<count;i++){
+                    const el = document.createElement('div');
+                    el.className = 'confetti-piece';
+                    const left = Math.random()*100;
+                    const size = 8 + Math.random()*12;
+                    el.style.left = left + '%';
+                    el.style.width = size+'px';
+                    el.style.height = (size*0.6)+'px';
+                    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+                    el.style.transform = 'rotate('+ (Math.random()*360) +'deg)';
+                    el.style.animationDelay = (Math.random()*0.5)+'s';
+                    el.style.opacity = 0.95;
+                    document.body.appendChild(el);
+                    // remove after animation
+                    setTimeout(()=> el.remove(),4200);
+                }
+            }
+
+            // input submit handler: trigger when user types "Happy Birthday"
+            if(dateSubmit){
+                dateSubmit.addEventListener('click', ()=>{
+                    const value = (dateInput.value || '').trim();
+                    console.log('Input submit:', value);
+                    const normalized = value.replace(/^"|"$/g,'').replace(/^'|'$/g,'').trim().toLowerCase();
+                    const containsHappy = normalized.includes('happy');
+                    const containsBirthday = normalized.includes('birthday');
+                    const isMatch = (normalized === 'happy birthday') || (containsHappy && containsBirthday);
+                    if(isMatch){
+                        // use the exact original message you provided (preserve heading + paragraph)
+                        const originalText = "Hi Bee!\n\nFirst of all, thank you so much for being nice with me. I have never felt that you're a stranger ever since as if I know you already, we talked like we have known each other for years even though sometimes Bee is silly that you bully Bear tho it is a funny side of you love. You being jolly and gullible at all times even if you are in a tough situation is one of your greatest strenght and I adore it Bee. Bee, you're one of my answered prayers, my sunshince, and my greatest strenght. Someday we will build our future and family together love, right now we just have to endure the distance between us but it will not waver my love for you. Bee, Happy birthday! Enjoy your day to the fullest";
+                        const originalHtml = '<h2>Hi Bee!</h2><p>'+originalText.replace(/\n\n/,'</p><p>')+'</p>';
+                        // render inline under the input (not in the popup)
+                        (function renderInline(){
+                            // remove any existing inline container
+                            const existing = document.querySelector('.inline-variant');
+                            if(existing) existing.remove();
+                            const container = document.createElement('div');
+                            container.className = 'inline-variant';
+                            const rephrased = rephraseMessage(originalText);
+                            container.innerHTML = `
+                                <div class="message-body energetic">${rephrased}</div>
+                            `;
+                            // insert after the date prompt
+                            if(datePrompt && datePrompt.parentNode){
+                                datePrompt.parentNode.insertBefore(container, datePrompt.nextSibling);
+                            } else {
+                                document.querySelector('main.wrap').appendChild(container);
+                            }
+                            // scroll into view
+                            try{ container.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+                        })();
+                        // launch confetti for celebration
+                        try{ launchConfetti(); }catch(e){}
+                        // keep the input visible for further interaction
+                    } else {
+                        // show helpful error and echo what was typed
+                        showMessage('<p class="err">That input did not match. Try typing: Happy Birthday</p><p style="opacity:.85;margin-top:.5rem;font-size:.9rem">You typed: '+(value?value:'(empty)')+'</p>');
+                    }
+                });
+                dateInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') dateSubmit.click(); });
+            }
+
+            buttons.forEach(btn=>{
+                btn.addEventListener('click', ()=>{
+                    const msg = btn.dataset.message || '';
+                    // toggle
+                    const isOpen = btn.getAttribute('aria-expanded') === 'true';
+                    if(isOpen){ closePopup(); return; }
+                    // if no message available, show error
+                    if(!msg || msg.trim() === ''){
+                        showMessage('<p class="err">That keyword is incorrect or has no message.</p>');
+                        return;
+                    }
+                    // show new
+                    showMessage('<p>'+msg+'</p>');
+                    btn.setAttribute('aria-expanded','true');
+                });
+            });
+
+            // close when clicking outside
+            document.addEventListener('click', (e)=>{
+                if(!e.target.closest('.keywords') && !e.target.closest('#pop')) closePopup();
+            });
+            // close on Escape
+            document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePopup(); });
+
+            // monthsary tip removed
+        })();
+    </script>
+</body>
+</html>
